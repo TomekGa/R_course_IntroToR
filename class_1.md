@@ -33,7 +33,7 @@ sudo apt-get install r-base
 ```
 
 Run R. You should see a window similar to the one below.
-![](/home/tomek/Dropbox/Kurs_R/work_in_progress/R_console.png)  
+![](images/R_console.png)  
 It is so called R console. Anything written and executed within a
 console will be interpreted (calculated) by R and will print out
 something in the console.
