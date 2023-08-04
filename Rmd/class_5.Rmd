@@ -1,0 +1,325 @@
+---
+title: "Introduction to R - class 5" 
+author: "**Tomek Gaczorek**; tomek.gaczorek@gmail.com"
+date: "09.11.21"
+output: github_document
+---
+
+```{r echo = FALSE,message=FALSE}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, x)
+  } else x
+}
+library(ggplot2)
+library(dplyr)
+my_list <- list(c(1:60),npk)
+new_list <- list("internal_vector" = c(1:60),"internal_dataset" = npk)
+my_data_1 <- read.table("/home/tomek/Dropbox/Kurs_R/work_in_progress/rats.txt",header = T,sep = "\t")
+my_data <- cbind("ID" = c(1:nrow(my_data_1)),my_data_1)
+```
+
+<!-- `r colorize("**!!! Decription of exercises is in green !!!**","green")` -->
+
+<!-- `r colorize("**!!! Advanced (optional) parts are marked with the red asterixis !!!**","red")` -->
+
+**For the use of *dplyr* package (section 4) I highly recommend to print the ["Cheat Sheet"](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) before the classes.**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1. Lists
+
+Imagine performing an analysis with many outcomes of different types (e.g. vectors and data frames). They can be stored as the individual variables but it is rather inconvenient. To keep all related outcomes in one variable use the R object called *list*. Think about it as an organizer where you can name your stuff and arrange it in the right order. To create a *list* use the *list()* function in the following way: *list(element_1,element_2,...)*. 
+
+`r colorize("**Ex 1. Create a list containing an integer vector from 1 to 60 and the built-in *npk* dataset. Save it to a variable called *my_list*. Call it.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+my_list
+```
+
+You can also give a name to each element of the created list by typing: *list("name_1" = element_1,"name_2" = element_2,...)*. 
+
+`r colorize("**Ex 2. Create the similar list as in the exercise 1 but call the vector as 'internal_vector' and the data frame as 'internal_dataset'. Save it as *new_list* and call it.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+new_list
+```
+
+**Curiosity**  
+Lists can contain any R objects including other lists as well.
+
+### 2. Subsetting the list
+
+The lists similarly to vectors are characterized by one coordinate: the position of element. You can subset them in the exact same way as vectors ([ ]) but then the result will always be a list. This is an important thing to remember, as forgetting about this rule is the cause of many frustrating errors.
+
+`r colorize("**Ex 3. Obtain the second element of *my_list* using single square brackets and save it as a new variable. Call it and check its class.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+my_list[2]
+class(my_list[2])
+```
+
+To directly extract any specific R object from a list, use double square brackets ([[ ]]). Remember, however, that it applies only for subsetting single objects (you cannot obtain several objects in the same time).
+
+`r colorize("**Ex 4. Obtain the second element of *my_list* using double square brackets and save it as a new variable. Call it and check its class.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+my_list[[2]]
+class(my_list[[2]])
+```
+
+If the elements of a list have their own names you can use them instead of the coordinates. Do it by typing the name inside square brackets or use the dollar sign separating list and element names. In the latter case do not use quotation marks around the element name.
+
+`r colorize("**Ex 5. Extreact the *internal_vector* element of *new_list*.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+new_list$internal_vector
+```
+
+**Curiosity**  
+You have probably noticed that the dollar sign was used before for obtaining given columns from a data frame. It is not a coincidence. *Data frame* is recognized by R as a special kind of list with each element being a vector (column) of the same length.  
+
+Once you obtained given element of a list you can directly subset it in the same line of code. For instance to obtain 15^th^ element of *internal_vector* you can type: *new_list$internal_vector[15]* or *new_list[["internal_vector"]][15]*.
+
+`r colorize("**Ex 6. Obtain the *yield* column from the second element of the *new_list*. Type the command in a single line.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+new_list$internal_dataset$yield
+```
+
+### 3. Lists and functions
+
+Functions in R can return only single type of an R object. To visualize it, perform the example below.
+
+`r colorize("**Ex 7. Calculate the standard deviation of a vector from 5 to 500. Save it as *my_sd* variable and call it.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+sd(c(5:500))
+``` 
+
+Focus on the assignment arrow! Each variable needs to have a unique name and contain single R object. If the function would return more objects there is no way to save the outcome as a single variable (you cannot use assignment arrow).  
+
+**Curiosity**  
+There are of course some ways to overcome this limitation (e.g. *assign()* function) but they are outside the scope of this course.  
+
+The simplest solution to return multiple objects from a single function is to pack them inside a list. It is often used in statistical functions as the outcome of analysis may contain original data, formula, fitted values, residuals or even plots. 
+
+`r colorize("**Ex 8. Create a function operating over a numerical vector that will return a list containing the original vector, mean, median and standard deviation. Test it on a vector from 3 to 1000.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+p <- 3:1000
+list("original" = p,"mean" = mean(p),"median" = median(p),"sd" = sd(p))
+``` 
+
+**An advice**  
+You can create an empty list by typing *list()*.
+
+During the last class we have generated many plots. They can be saved either as image (done before) or as the instruction for R how to generate them de novo. To use the second option, simply save the code that generate the plot to a chosen variable.
+
+`r colorize("**Ex 9. Create a list consisting of *npk* dataset and two plots presenting:  1. Relationship between yield and block.  2. Relationship between yield and nitrogen treatment.**","green")`  
+Expected result:  
+```{r echo = FALSE, comment= ""}
+p1 <- ggplot(data = npk)+geom_boxplot(aes(x = block,y = yield))+theme_bw()+labs(title = "Relationship between block and yield",x = "Block",y = "Yield")
+p2 <- ggplot(data = npk)+geom_boxplot(aes(x = N,y = yield))+theme_bw()+labs(title = "Relationship between nitrogen treatment and yield",x = "Nitrogen Treatment",y = "Yield")
+list("dataset" = npk,"Block" = p1,"Nitrogen" = p2)
+``` 
+
+### 4. dplyr
+
+*dplyr* is an extremely popular R package that helps to easily manage the data frames. 
+
+`r colorize("**Ex 10. Install and load the *dplyr* package.**","green")` 
+
+`r colorize("**Ex 11. Use the download.file() function to download the *rats.txt* file to your working directory. The url is 'https://dl.dropbox.com/s/a0d7f9zxj68jxpb/rats.txt?dl=1'. Then, import it, save as *my_data* variable and call it.**","green")`  
+First 10 rows of expected result:  
+```{r echo = FALSE, comment= ""}
+head(my_data_1,10)
+``` 
+
+`r colorize("**Ex 12. Modify the *my_data* by adding the column with ID at the beginning.**","green")`   
+First 10 rows of expected result:  
+```{r echo = FALSE, comment= ""}
+head(my_data,10)
+``` 
+
+All subsequent functions come from the loaded *dplyr* package.  
+**Importantly, names of columns provided to *dplyr* functions do not need quotation marks.** 
+
+**SORTING OBSERVATIONS**
+
+To sort the data, use *arrange()* function in the following manner: *arrange(dataset,ordering_column)*
+
+`r colorize("**Ex 13. Obtain the observations from *my_data* sorted with increasing levels of glycogen.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(arrange(my_data,Glycogen),10)
+``` 
+
+To obtain the descending order put the name of column inside *desc()* function.
+
+`r colorize("**Ex 14. Obtain the observations from *my_data* sorted with the decreasing levels of glycogen.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(arrange(my_data,desc(Glycogen)),10)
+``` 
+
+You can also sort the data by multiple collums. Do it by adding an additional collumn in the following manner: *arrange(dataset,ordering_column1,ordering_column2)*. Note that the priority of sorting is denoted by the order of function arguments.
+
+`r colorize("**Ex 15. Obtain the observations from *my_data* sorted firstly by 'Treatment' column and then by 'Rat' column. Both in ascending order.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(arrange(my_data,Treatment,Rat),10)
+``` 
+
+**SUBSETTING COLUMNS**
+
+To select particular columns use the *select()* function in the following way: *select(dataset,column_name1,column_name2)*. Note that all mentioned columns will be preserved.
+
+`r colorize("**Ex 16. Obtain the 'Glycogen' and 'Liver' columns from *my_data*.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(select(my_data,Glycogen,Liver),10)
+``` 
+
+You can also use minus preceding the column name which means "all except this column".
+
+`r colorize("**Ex 17. Obtain the 'ID','Glycogen','Treatment' and 'Liver' columns from *my_data*. Use the minus (-) sign.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(select(my_data,-Rat),10)
+``` 
+
+**SUBSETTING OBSERVATIONS**
+
+To subset the observations, use the *filter()* function in the following manner: *filter(dataset,your_logical_condition)*. Note that logical conditions are always related to the values inside a given collumn.
+
+`r colorize("**Ex 18. Obtain the observations for Treatment 1.**","green")`     
+First 10 rows of expected result:    
+```{r echo = FALSE, comment= ""}
+head(filter(my_data,Treatment == 1),10)
+``` 
+
+You can also combine several logical conditions by using logical operators (see Class 3). Note, however, that for each observation under consideration it needs to result in a single TRUE or FALSE.
+
+`r colorize("**Ex 19. Obtain the observations for Treatment 3 with glycogen level higher than 135.**","green")`     
+Expected result:    
+```{r echo = FALSE, comment= ""}
+head(filter(my_data,Treatment == 3 & Glycogen > 135),10)
+``` 
+
+**MODIFYING COLUMNS**
+
+To create a new column based on the others use the *mutate()* function in the following manner: *mutate(dataset,new_column_name = recipe_for_values)*. "Recipe for values" is often a mathematical formula or simple mathematical function based on values of other columns. Note that it is just a modification of given value for each observation separately.
+
+`r colorize("**Ex 20. Create a new column called *log_Gly* that will be a natural logarithm transformation of Glycogen column.**","green")`     
+First 10 rows of expected result:      
+```{r echo = FALSE, comment= ""}
+head(mutate(my_data,log_Gly = log(Glycogen)),10)
+``` 
+
+**SUMMARY**
+
+Make a summary of your dataset with the *summarise()* function. The syntax is as follows: *summarise(dataset,name_of_summary1 = recipe_for_value1,name_of_summary2 = recipe_for_value2,...)*. Recipe in that case is any aggregating function (e.g. *mean()*) that will accept whole column (vector) and result in a single statistics. Note that this function will result in creation of new table with 1 row of summary statistics and as many columns as number of statistics mentioned. 
+
+`r colorize("**Ex 21. Create a summary of *my_data* containing mean, median, maximum value, minimum value and standard deviation of Glycogen column.**","green")`     
+Expected result:      
+```{r echo = FALSE, comment= ""}
+summarise(my_data,mean = mean(Glycogen),median = median(Glycogen),max_value = max(Glycogen),min_value = min(Glycogen),sd = sd(Glycogen))
+``` 
+
+You can also count the number of observations coresponding to the groups within a given column e.g. check how many observations were collected for each treatment. To obtain it use the *count()* function by typing *count(dataset,given_column)*.
+
+`r colorize("**Ex 22. Use count() function to calculate how many Treatments were used in a study.**","green")`     
+Expected result:      
+```{r echo = FALSE, comment= ""}
+count(my_data,Treatment)
+``` 
+
+**PIPELINE OPERATOR AND PIPELINE**
+
+As you probably noticed all *dplyr* functions have *data* as the first argument. Based on this characteristics you can create a pipeline where the next function uses the output generated by the previous one. In that case you should provide the dataset argument to the first function only. 
+
+Pipeline is created by connecting subsequent functions with *%>%* (pipe) operator. Remember to skip the *data* argument in all functions except for the first one e.g. *select(dataset,column1,column2) %>% filter(column1 > 50)*.
+
+`r colorize("**Ex 23. Using pipeline and *my_data* data frame: 1. select 'ID',Glycogen' and 'Liver' column. 2. obtain observations with glycogen level lower than 140. 3. sort it based on 'Glycogen' collumn in descending order.**","green")`    
+Expected result:      
+```{r echo = FALSE, comment= ""}
+select(my_data,ID,Glycogen,Liver) %>% filter(Glycogen < 140) %>% arrange(desc(Glycogen))
+```
+
+**GROUPING**
+
+Performing any function over complete dataset is often not what you really want. Imagine 3 species with a trait of interest. It can be the case that the overall mean does not reflect the variability among species. To check value for each species separately you need to group you dataset. Do it by using *group_by()* function in the following manner *group_by(dataset,column_with_groups)*. This produces a grouped dataframe and will cause all subsequent functions to operate on each group separately.
+
+`r colorize("**Ex 24. Using pipeline, group_by() function and *my_data* data frame, create a summary table with mean and standard deviation of 'Glycogen' column for each treatment separately.**","green")`    
+Expected result:      
+```{r echo = FALSE, comment= "",message=F}
+group_by(my_data,Treatment) %>% summarise(mean = mean(Glycogen),sd = sd(Glycogen))
+```
+
+**An advice**
+To perform any action on the whole dataset again, use the *ungroup()* function.
+
+`r colorize("**Ex 25. Using pipeline, group_by() function and *my_data* data frame, create a new column with the deviations of *Glycogen* values from the arithmetic mean in a given *Treatment*.**","green")`    
+Expected result:      
+```{r echo = FALSE, comment= "",message=F}
+group_by(my_data,Treatment) %>% mutate(Deviations = abs(Glycogen-mean(Glycogen)))
+```
+
+`r colorize("******************ADVANCED********************","red")`  
+
+**JOINING**
+
+Imagine having two data frames corresponding to the same study system. In both of them there is a column with individual IDs. How to bind them together? Using *cbind()* is rather a bad idea as the order of observations can differ.  
+The solution is to use one of the * ..._join()* functions:  
+1. *left_join()* - join the values from second table (right) that correspond to observation in the first one (left). If there is no suitable value in the second table, *NA* is returned.  
+2. *right_join()* - join the values from first table (left) that correspond to observation in the second one (rigth). If there is no suitable value in the first table, *NA* is returned.  
+3. *inner_join()* - return only that observations that have corresponding values in both tables.  
+4. *full_join()* - join what can be joined but keep all observations. In case of the lack of suitable value, returns *NA*.
+
+Each of the abovementioned functions can be used by typing: * ..._join(first_table,second_table,by = "shared_column_name")*.   
+Notice that the name of shared column should be exactly the same in both tables (eg. "ID").  
+ 
+`r colorize("**Ex 26. Execute the code below and then join the observations from *my_data* and *new_data* data frames. Keep all observations from *my_data* but only those from *new_data* that have their counterparts in *my_data*.**","green")`    
+```{r echo = T,eval=F, comment= ""}
+new_data <- data.frame("ID" = c(2:100),"weight" = rnorm(99,mean = 150,sd = 20))
+```
+Expected result:      
+```{r echo = FALSE, comment= "",message=F}
+new_data <- data.frame("ID" = c(2:100),"weight" = rnorm(99,mean = 150,sd = 20))
+left_join(my_data,new_data,by = "ID")
+```
+
+**Curiosity**  
+1. Using *joins* let us avoid repeating the same information across many data frames.  
+2. The concept of *joins* is common in many computer languages but it is most often used in databases management (e.g. SQL).
+
+`r colorize("************************************************************","red")` 
+
+### 5. Homework
+
+1. Execute the code below to generate *hw_list* variable. Then replace the second element of a list with a built-in *CO2* dataset.   
+```{r echo = T,eval=F, comment= ""}
+hw_list <- list("list1" = list("v1" = c(1:5),"v2" = c(6:10)),"vec1" = c(1:100),"dataset" = npk)
+```  
+2. Create a function that takes a string as the argument and returns a vector of single letters from that string. Use *str.split()* function.  
+3. Create a function that takes a vector of single letters as the argument and returns a list of two elements:  
+a) the original vector  
+b) vector with 3 random words created out of them. Words do not need to make any sense  
+4. Using *dplyr* package and *CO2* dataset, subset observations from Quebec and return the mean of *conc* and *uptake* collumn  
+
+`r colorize("******************ADVANCED********************","red")`  
+
+5. a) execute the code below to obtain an *add_table* dataframe. 
+```{r echo = T,eval=F, comment= ""}
+add_table <- data.frame("ID" = sample(c(1:nrow(CO2))),"random" = rnorm(nrow(CO2),20,2))
+``` 
+b) add column with ID to the *CO2* dataset. Start with 1.
+c) join both tables using the one of * ..._join()* functions  
+d) return the mean for *conc*, *uptake* and *random* column for each region (Quebec or Mississippi) separately.
+
+`r colorize("************************************************************","red")` 
