@@ -249,7 +249,7 @@ All subsequent plots will be generated based on built-in *iris* dataset.
 Please, read carefully the dataset description (*?iris*). Here is a
 little botanic hint:
 
-![](flower.png)
+![](images/flower.png)
 
 **Ex 13. Create a scatterplot presenting the relationship between
 sepals’ length and width. Use *geom_point()* function for points
