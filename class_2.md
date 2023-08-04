@@ -30,7 +30,7 @@ R Studio has three great advantages over classical R console:
 
 The R Studio window consists of four main panels:
 
-![<https://sfg-ucsb.github.io/fishery-manageR/images/rstudio_ide.png>](/home/tomek/Dropbox/Kurs_R/work_in_progress/rstudio_ide.png)
+![<https://sfg-ucsb.github.io/fishery-manageR/images/rstudio_ide.png>](images/rstudio_ide.png)
 
 <!-- ![https://sfg-ucsb.github.io/fishery-manageR/images/rstudio_ide.png](C:\Users\Tomasz\Dropbox\Kurs_R\rstudio_ide.png) -->
 
@@ -99,7 +99,7 @@ Before performing any new analysis make sure three things are done:
 
 ### 4. Data frame
 
-![](/home/tomek/Dropbox/Kurs_R/work_in_progress/objects.png)
+![](images/objects.png)
 
 Data frame is something you probably know as a “table”. However it has
 some unique characteristics:
